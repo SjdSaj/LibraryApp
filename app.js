@@ -88,7 +88,7 @@ app.get('/',(req,res)=>{
     
 });
 
-app.get('/admin')
+// app.get('/admin')
 
 
 

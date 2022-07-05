@@ -33,11 +33,6 @@ function router(nav){
         data.save();
         res.redirect('/login');
 
-        res.render('signup',{
-            nav,
-            title:'Library',
-            heading:'Signup'
-        });
 
     });
 
