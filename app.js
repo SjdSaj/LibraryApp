@@ -52,7 +52,7 @@ const bookData = require('./src/model/database');
 
 
 // For using Styles in express
-app.use(express.static(__dirname+'/public'));
+app.use(express.static('./public'));
 // 
 // For using Routing handler
 app.use(express.urlencoded({extended:true}));
@@ -63,7 +63,7 @@ app.use('/signup',signupRouter);
 app.use('/admin',adminRouter);
 // For setting ejs  
 app.set('view engine','ejs');
-app.set('views',__dirname+'/src/views')
+app.set('views','./src/views')
 // 
 
 app.get('/',(req,res)=>{
