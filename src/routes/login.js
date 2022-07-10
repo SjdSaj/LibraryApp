@@ -50,7 +50,9 @@ function router(nav,log,adminNav){
         if ((req.body.username === 'admin') && (req.body.pswd === 'admin')) {
             
             req.session.isAuth = 'admin';
-            return res.redirect('/');
+            //
+            console.log(req.session);
+            return res.redirect('/'); 
                 
         } 
         
