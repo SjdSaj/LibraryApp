@@ -96,35 +96,35 @@
           <!--/stories-->
           
           <div class="row">    
-            <form action="/admin/addAuthor/added" method="post">
+            <form action="/admin/addAuthor/added" method="post" onsubmit="func();" enctype="multipart/form-data">
               <div class="col-md-6">
                 <label for="title">Name :</label>
-                <input type="text" class="form-control" name="name">
+                <input type="text" class="form-control" name="name" id="name">
               </div>
                 
                 <div class="col-md-6">
                 <label for="author">Work :</label>
-                <input type="text" name="work" class="form-control" >
+                <input type="text" name="work" id="work" class="form-control" >
                 </div>
                 
                 <div class="col-md-6">
                   <label for="author">Genre :</label>
-                  <input type="text" name="genre" class="form-control">
+                  <input type="text" name="genre" id="genre" class="form-control">
                 </div>
                 
                 <div class="col-md-6">
                   <label for="genre">Age :</label>
-                  <input type="number" name="age" class="form-control">
+                  <input type="number" name="age" id="age" class="form-control">
                 </div>
                 
                 <div class="col-md-6">
                   <label for="image">Image :</label>
-                  <input type="file" name="img" class="form-control">
+                  <input type="file" name="img" id="img" class="form-control">
                 </div>
                 
                 <div class="col-md-6">
                   <label for="image">Discription :</label>
-                  <textarea name="desc" id="textarea" cols="50" rows="5" class="form-control"></textarea>
+                  <textarea name="desc" id="desc" cols="50" rows="5" class="form-control"></textarea>
                 </div>
                 
                 <div class="col-md-12 " style="margin-top: 10px;">
@@ -164,7 +164,7 @@
                     <form action="/admin/addAuthor/update/<%=book[i]._id%>" method="get" style="margin:0px 0px 5px 0px ;">
                        <button type="submit" class="btn btn-success " >update</button>
                     </form>
-                    <form action="/admin/addAuthor/delete/<%=book[i]._id%>" method="post" onsubmit="del()">
+                    <form action="/admin/addAuthor/delete/<%=book[i]._id%>&&<%=book[i].img%>" method="post" onsubmit="del()">
                       <button type="submit" class="btn btn-danger">Delete</button>
                     </form> 
                   </td>
@@ -230,6 +230,30 @@
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
 		<script src="/js/bootstrap.min.js"></script>
     <script>
+      function func()
+      {
+        
+        var name = document.getElementById('name').value;
+        var work = document.getElementById('work').value;
+        var age = document.getElementById('age').value;
+        var genre = document.getElementById('genre').value;
+        var img = document.getElementById('img').value;
+        var desc = document.getElementById('desc').value;
+
+        // console.log(name,author,genre,img);
+        
+        if(name===""||work===""||genre===""||age===""||img===""||desc===""){
+          alert('fill all the fields');
+          event.preventDefault();
+          
+        }else{
+          alert('The data are successfully saved to database');
+        }
+
+        
+      }
+
+
        function del(){
         
         function conf(){

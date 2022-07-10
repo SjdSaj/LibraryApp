@@ -96,7 +96,7 @@
           <!--/stories-->
           
         <div class="row">
-            <form action="/admin/addAuthor/update/<%=data._id%>" method="post" onsubmit="func();">
+            <form action="/admin/addAuthor/update/<%=data._id%>&&<%=data.img%>" method="post" onsubmit="func();" enctype="multipart/form-data">
                 <div class="col-md-12">
                     <label for="title">Id :</label>
                     <input type="text" name="id" id="id" class="form-control" disabled value="<%=data._id%>">
@@ -119,11 +119,11 @@
                 </div>
                 <div class="col-md-6">
                     <label for="image">Current Image :</label>
-                    <input type="text" name="" id="" class="form-control" disabled value="<%=data.img%>">
+                    <input type="text" name="pImg" id="pImg" class="form-control" disabled value="<%=data.img%>">
                 </div>
                 <div class="col-md-6">
                     <label for="image">New Image :</label>
-                    <input type="file" name="img" id="img" class="form-control" value="<%=data.img%>">
+                    <input type="file" name="img" id="img" class="form-control" >
                 </div>
                 <div class="col-md-12 w-100">
                     <button type="submit" class="btn btn-primary mt-2 w-100" style="width: 100%;margin-top: 20px;">Update</button>
@@ -198,7 +198,7 @@
         var name = document.getElementById('name').value;
         var work = document.getElementById('work').value;
         var genre = document.getElementById('genre').value;
-        var desc = document.getElementById('dsc').value;
+        var desc = document.getElementById('desc').value;
         var img = document.getElementById('img').value;
 
         // console.log(name,author,genre,img);

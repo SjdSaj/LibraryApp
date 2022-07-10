@@ -96,7 +96,7 @@
           <!--/stories-->
           
           <div class="row">    
-            <form action="/admin/addBook/update/<%=data._id%>" method="post" onsubmit="func();">
+            <form action="/admin/addBook/update/<%=data._id%>&&<%=data.img%>" method="post" onsubmit="func();" enctype="multipart/form-data">
               <div class="col-md-12">
                 <label for="title">Id :</label>
                 <input type="text" name="id" id="id" class="form-control" disabled value="<%=data._id%>">
@@ -116,7 +116,7 @@
                 </div>
                 <div class="col-md-6">
                   <label for="image">Current Image :</label>
-                  <input type="text" name="" id="" class="form-control"disabled value="<%=data.img%>">
+                  <input type="text" name="Pimg" id="" class="form-control"disabled value="<%=data.img%>">
                 </div>
                 <div class="col-md-6">
                   <label for="image">New Image :</label>

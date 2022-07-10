@@ -1,5 +1,8 @@
 const { request } = require('express'); 
 const express = require('express');
+const session = require('express-session')
+const multer = require('multer');
+const fs = require('fs');
 
 // importing the models for the database schema
 const bookData = require('../model/database');
@@ -8,21 +11,51 @@ const authorData = require('../model/authorModel');
 const adminRouter = express.Router();
 
 
+// model for storing session
+const mongodbStore = require('../model/sessionDB');
+
+// session middleware
+adminRouter.use(session({
+    secret:'this will secure the data',
+    resave: false,
+    saveUninitialized: false,
+    store:mongodbStore
+}));
+
+// multer middleware
+const fileStoreEngine = multer.diskStorage({
+    destination:(req,res,cb)=>{
+        cb(null,'./public/img');
+    },
+    filename: (req,file,cb)=>{
+        cb(null,Date.now()+"--"+file.originalname);
+    }
+})
+const upload = multer({
+    storage : fileStoreEngine
+})
+
 function router(nav,log,adminNav){
     
 
     adminRouter.get('/addBook',(req,res)=>{
-        
-        bookData.find()
-        .then(function(books){
+        if (req.session.isAuth === 'admin') {
+            bookData.find()
+                .then(function (books) {
 
-            
-            res.render('addBook',{
-                nav,
-                title:'Addbooks',
-                book:books
-            });
-        })
+
+                    res.render('addBook', {
+                        nav:adminNav,
+                        title: 'Addbooks',
+                        book: books
+                    });
+                })
+        }else if (req.session.isAuth === 'user'){
+            res.redirect('/login');
+        }else{
+            res.redirect('/login');
+        }
+        
         
             
         
@@ -32,17 +65,21 @@ function router(nav,log,adminNav){
     });
     adminRouter.get('/addAuthor',(req,res)=>{
         
-        
-        authorData.find()
-        .then(function(books){
+        if (req.session.isAuth === 'admin') {
+            authorData.find()
+                .then(function (books) {
 
-            
-            res.render('addAuthor',{
-                nav,
-                title:'Add Author',
-                book:books
-            });
-        })
+
+                    res.render('addAuthor', {
+                        nav:adminNav,
+                        title: 'Add Author',
+                        book: books
+                    });
+                })
+        }else{
+            res.redirect('/login');
+        }
+        
        
             
     
@@ -50,14 +87,14 @@ function router(nav,log,adminNav){
     });
 
 
-    adminRouter.post('/addAuthor/added',(req,res)=>{
+    adminRouter.post('/addAuthor/added',upload.single('img'),(req,res)=>{
         
         var item = {
             name: req.body.name,
             work: req.body.work,
             genre: req.body.genre,
             age: req.body.age,
-            img: req.body.img,
+            img: req.file.filename,
             desc: req.body.desc
         }
 
@@ -69,12 +106,15 @@ function router(nav,log,adminNav){
     });
 
     // POST request for adding books
-    adminRouter.post('/addBook',(req,res)=>{
+    adminRouter.post('/addBook',upload.single('img'),(req,res)=>{
+
+
+
         var item = {
             name: req.body.name,
             author: req.body.author,
             genre: req.body.genre,
-            img: req.body.img
+            img: req.file.filename
         }
 
         var book = bookData(item);
@@ -86,25 +126,39 @@ function router(nav,log,adminNav){
     // get request for update books
     adminRouter.get('/addBook/update/:id',(req,res)=>{
         var id = req.params.id;
-        bookData.findOne({_id:id}).
-        then(function(data){
-            res.render('updateBook',{
-                data,
-                nav,title:'Library App'
-            })
-        })
+        if (req.session.isAuth === 'admin') {
+            bookData.findOne({ _id: id }).
+                then(function (data) {
+                    res.render('updateBook', {
+                        data,
+                        nav:adminNav,
+                        title: 'Library App'
+                    })
+                })
+        }else{
+            res.redirect('/');
+        }
+        
         
     })
     // POST request for update books
-    adminRouter.post('/addBook/update/:id',(req,res)=>{
+    adminRouter.post('/addBook/update/:id&&:pImg',upload.single('img'),(req,res)=>{
         var id = req.params.id;
+        var pImg = req.params.pImg;
+        console.log(pImg);
+        fs.unlink(`./public/img/${pImg}`,(err)=>{
+            if(err){
+                throw err;
+            }
+        })
+
         var item = {
             name: req.body.name,
             author: req.body.author,
             genre: req.body.genre,
-            img: req.body.img
+            img: req.file.filename
         }
-        console.log(item)
+        
 
         bookData.updateOne({_id:id},{$set:{
             name:item.name,
@@ -118,10 +172,15 @@ function router(nav,log,adminNav){
     })
 
     // POST request for delete book
-    adminRouter.post('/addBook/delete/:id',(req,res)=>{
+    adminRouter.post('/addBook/delete/:id&&:img',(req,res)=>{
         var id = req.params.id;
+        var img = req.params.img;
         
-
+        fs.unlink(`./public/img/${img}`,(err)=>{
+            if(err){
+                throw err;
+            }
+        });
         bookData.deleteOne({_id:id})
         .then(function(){
             res.redirect('../');
@@ -132,26 +191,38 @@ function router(nav,log,adminNav){
     // get request for update author
     adminRouter.get('/addAuthor/update/:id',(req,res)=>{
         var id = req.params.id;
-        authorData.findOne({_id:id}).
-        then(function(data){
-            res.render('updateAuthor',{
-                data,
-                nav,title:'Library App'
-            })
-        })
+        if (req.session.isAuth === 'admin') {
+            authorData.findOne({ _id: id }).
+                then(function (data) {
+                    res.render('updateAuthor', {
+                        data,
+                        nav:adminNav,
+                         title: 'Library App'
+                    })
+                })
+        }else{
+            res.redirect('/');
+        }
+        
         
     })
 
     // POST request for Updating Author
-    adminRouter.post('/addAuthor/update/:id',(req,res)=>{
+    adminRouter.post('/addAuthor/update/:id&&:img',upload.single('img'),(req,res)=>{
         var id = req.params.id;
         var item = {
             name: req.body.name,
             work: req.body.work,
             genre: req.body.genre,
             desc: req.body.desc,
-            img: req.body.img
+            img: req.file.filename
         }
+        var pImg = req.params.img;
+        fs.unlink(`./public/img/${pImg}`,(err)=>{
+            if(err){
+                throw err;
+            }
+        });
         // console.log(item)
 
         authorData.updateOne({_id:id},{$set:{
@@ -167,9 +238,13 @@ function router(nav,log,adminNav){
     })
 
     // POST request for delete Author
-    adminRouter.post('/addAuthor/delete/:id',(req,res)=>{
+    adminRouter.post('/addAuthor/delete/:id&&:img',(req,res)=>{
         var id = req.params.id;
-        
+        fs.unlink(`./public/img/${req.params.img}`,(err)=>{
+            if(err){
+                throw err;
+            }
+        });
 
         authorData.deleteOne({_id:id})
         .then(function(){

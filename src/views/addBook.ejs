@@ -96,7 +96,7 @@
           <!--/stories-->
           
           <div class="row">    
-            <form action="/admin/addBook" method="post" onsubmit="func();">
+            <form action="/admin/addBook" method="post" onsubmit="func();" enctype="multipart/form-data">
                 <div class="col-md-6">
                   <label for="title">Title :</label>
                   <input type="text" name="name" id="name" class="form-control">
@@ -151,7 +151,7 @@
                     <form action="/admin/addBook/update/<%=book[i]._id%>" method="get" style="margin:0px 0px 5px 0px ;">
                        <button type="submit" class="btn btn-success " >update</button>
                     </form>
-                    <form action="/admin/addBook/delete/<%=book[i]._id%>" method="post">
+                    <form action="/admin/addBook/delete/<%=book[i]._id%>&&<%=book[i].img%>" method="post">
                       <button type="submit" class="btn btn-danger" onclick="del()">Delete</button>
                     </form> 
                   </td>

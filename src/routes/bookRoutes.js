@@ -1,8 +1,20 @@
 const { request } = require('express');
 const express = require('express');
+const session = require('express-session');
 const router =  express.Router();
-const booksData = require('../model/database');
 
+// model
+const booksData = require('../model/database');
+// model for storing session
+const mongodbStore = require('../model/sessionDB');
+
+// session middleware
+router.use(session({
+    secret:'this will secure the data',
+    resave: false,
+    saveUninitialized: false,
+    store:mongodbStore
+}));
 
 function booksrouter(nav,log,adminNav) {
     // books Router
@@ -28,7 +40,7 @@ function booksrouter(nav,log,adminNav) {
     // ]
     router.get('/', (req, res) => {
 
-        if (log) {
+        if (req.session.isAuth==='admin') {
             booksData.find()
                 .then(function (books) {
                     res.render('books', {
@@ -38,7 +50,7 @@ function booksrouter(nav,log,adminNav) {
                         books
                     });
                 })
-        } else {
+        } else if(req.session.isAuth==='user'){
             booksData.find()
                 .then(function (books) {
                     res.render('books', {
@@ -48,6 +60,8 @@ function booksrouter(nav,log,adminNav) {
                         books
                     });
                 })
+        }else{
+            res.redirect('/login');
         }
 
 
@@ -61,7 +75,7 @@ function booksrouter(nav,log,adminNav) {
 
     router.get('/:name', (req, res) => {
         const name = req.params.name;
-        if(log){
+        if(req.session.isAuth==='admin'){
             booksData.findOne({_id:name})
         .then(function(book){
             res.render('singleBook', {
@@ -71,7 +85,7 @@ function booksrouter(nav,log,adminNav) {
                 book
             });
         })
-        }else{
+        }else if(req.session.isAuth==='user'){
             booksData.findOne({_id:name})
         .then(function(book){
             res.render('singleBook', {
@@ -81,6 +95,8 @@ function booksrouter(nav,log,adminNav) {
                 book
             });
         })
+        }else{
+            res.redirect('/login');
         }
         
         
